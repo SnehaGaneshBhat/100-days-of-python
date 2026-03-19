@@ -1,41 +1,29 @@
-import time
-from turtle import Screen
-from player import Player
-from car_manager import CarManager
-from scoreboard import Scoreboard
+from turtle import Turtle
 
-screen = Screen()
-screen.setup(width =600, height = 600)
-screen.tracer(0)
+STARTING_POSITION = (0, -280)
+MOVE_DISTANCE = 10
+FINISH_LINE_Y = 270
 
-player = Player()
-car_manager = CarManager()
-scoreboard = Scoreboard()
+class Player(Turtle):
+    def __init__(self):
+        super().__init__()
+        self.shape("turtle")
+        self.penup()
+        self.go_to_start()
+        self.setheading(90)
 
-screen.listen()
-screen.onkeypress(player.go_up, "Up")
+    def go_up(self):
+        new_y = self.ycor() + MOVE_DISTANCE
+        self.goto(0, new_y)
 
+    def go_to_start(self):
+        self.goto(STARTING_POSITION)
 
-game_is_on = True
-while game_is_on:
-    time.sleep(0.1)
-    screen.update()
+    def is_at_finish_line(self):
+        if self.ycor() > FINISH_LINE_Y:
+            return True
 
-    car_manager.create_car()
-    car_manager.move_cars()
-
-    #Detection of collision with car
-    for car in car_manager.all_cars:
-       if  car.distance(player) < 25:
-           game_is_on = False
-           scoreboard.game_over()
-
-    #Detection of when player reaches the end
-    if player.is_at_finish_line():
-        player.go_to_start()
-        car_manager.level_up()
-        scoreboard.next_level()
+        else:
+            return False
 
 
-
-screen.exitonclick()
